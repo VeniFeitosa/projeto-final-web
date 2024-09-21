@@ -51,6 +51,7 @@ export interface ApiEventoEvento extends Struct.CollectionTypeSchema {
       'manyToOne',
       'api::categoria.categoria'
     >;
+    data: Schema.Attribute.DateTime;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
