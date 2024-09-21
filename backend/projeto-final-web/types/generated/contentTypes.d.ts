@@ -12,12 +12,13 @@ export interface ApiEventoEvento extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Imagem: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
+    imagem: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    descricao: Schema.Attribute.String;
+    nome: Schema.Attribute.String & Schema.Attribute.Required;
+    inscricaos: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::inscricao.inscricao'
     >;
-    Descricao: Schema.Attribute.String;
-    Nome: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -27,6 +28,38 @@ export interface ApiEventoEvento extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::evento.evento'>;
+  };
+}
+
+export interface ApiInscricaoInscricao extends Struct.CollectionTypeSchema {
+  collectionName: 'inscricaos';
+  info: {
+    singularName: 'inscricao';
+    pluralName: 'inscricaos';
+    displayName: 'Inscri\u00E7\u00E3o';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    evento: Schema.Attribute.Relation<'manyToOne', 'api::evento.evento'>;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::inscricao.inscricao'
+    >;
   };
 }
 
@@ -500,6 +533,10 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    inscricaos: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::inscricao.inscricao'
+    >;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -881,6 +918,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
       'api::evento.evento': ApiEventoEvento;
+      'api::inscricao.inscricao': ApiInscricaoInscricao;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::i18n.locale': PluginI18NLocale;

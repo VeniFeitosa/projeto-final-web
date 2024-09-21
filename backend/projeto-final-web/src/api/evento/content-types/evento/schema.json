@@ -12,9 +12,9 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "Imagem": {
+    "imagem": {
       "type": "media",
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "allowedTypes": [
         "images",
@@ -23,12 +23,18 @@
         "audios"
       ]
     },
-    "Descricao": {
+    "descricao": {
       "type": "string"
     },
-    "Nome": {
+    "nome": {
       "type": "string",
       "required": true
+    },
+    "inscricaos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::inscricao.inscricao",
+      "mappedBy": "evento"
     }
   }
 }
