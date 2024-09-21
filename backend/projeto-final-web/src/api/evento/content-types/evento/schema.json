@@ -35,6 +35,12 @@
       "relation": "oneToMany",
       "target": "api::inscricao.inscricao",
       "mappedBy": "evento"
+    },
+    "categoria": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::categoria.categoria",
+      "inversedBy": "eventos"
     }
   }
 }
