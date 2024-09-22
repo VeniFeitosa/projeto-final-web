@@ -124,8 +124,8 @@ function redirecionarLogin() {
       <div class="row">
         <div class="col-lg-4 col-md-6" v-for="evento in eventos" :key="evento.id">
           <div class="card mb-4">
-            <img :src="uploadHelper(evento.imagem?.url)" class="card-img-top" alt="Imagem do Evento" style="max-height: 300px;object-fit: cover;object-position: center;">
-            <div class="card-body">
+            <img :src="uploadHelper(evento.imagem?.url)" class="img-fluid card-img-top" alt="Imagem do Evento" style="height: 18.75rem;object-fit: cover;object-position: center;">
+            <div class="card-body" style="height: 200px;">
               <h5 class="card-title">{{ evento.nome }}</h5>
               <p class="card-text">{{ evento.descricao }}</p>
               <p class="card-text"><small class="text-muted">Data: {{ format(new Date(evento.data), 'dd/MM/yyyy HH:mm') }}</small></p>

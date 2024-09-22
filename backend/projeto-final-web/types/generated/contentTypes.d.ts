@@ -40,7 +40,7 @@ export interface ApiEventoEvento extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    imagem: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imagem: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     descricao: Schema.Attribute.String;
     nome: Schema.Attribute.String & Schema.Attribute.Required;
     inscricaos: Schema.Attribute.Relation<

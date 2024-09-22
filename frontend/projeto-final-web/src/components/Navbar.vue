@@ -32,35 +32,35 @@ const handleLogout = () => {
         <ul class="navbar-nav">
             <li class="nav-item">
             <RouterLink
-                class="nav-link"
+                class="nav-link rounded"
                 :class="{ active: route.path === '/' }"
                 to="/"
             >HOME</RouterLink>
             </li>
             <li v-if="!userStore.isAuthenticated" class="nav-item">
             <RouterLink
-                class="nav-link"
+                class="nav-link rounded"
                 :class="{ active: route.path === '/login' }"
                 to="/login"
             >LOGIN</RouterLink>
             </li>
             <li v-if="userStore.isAuthenticated && userStore.role !== 'Admin'" class="nav-item">
             <RouterLink
-                class="nav-link"
+                class="nav-link rounded"
                 :class="{ active: route.path === '/registrations' }"
                 to="/registrations"
             >MINHAS INSCRIÇÕES</RouterLink>
             </li>
             <li v-if="userStore.isAuthenticated && userStore.role === 'Admin'" class="nav-item">
                 <RouterLink
-                    class="nav-link"
+                    class="nav-link rounded"
                     :class="{ active: route.path === '/admin/eventos' }"
                     to="/admin/eventos"
                 >MANTER EVENTOS</RouterLink>
             </li>
             <li v-if="userStore.isAuthenticated && userStore.role === 'Admin'" class="nav-item">
                 <RouterLink
-                    class="nav-link"
+                    class="nav-link rounded"
                     :class="{ active: route.path === '/admin/categorias' }"
                     to="/admin/categorias"
                 >MANTER CATEGORIAS</RouterLink>
