@@ -1,15 +1,17 @@
 <script setup>
+import ToastManager from '@/components/ToastManager.vue'
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { api } from '@/api'
 import { useUserStore } from '@/stores/userStore'
-const userStore = useUserStore()
-import { format } from "date-fns";
-import { useUpload } from '@/composables/useUpload';
-const uploadHelper = useUpload()
+import { toast } from 'vue-sonner'
+import { format } from "date-fns"
+import { useUpload } from '@/composables/useUpload'
 
+const userStore = useUserStore()
 const inscricoes = ref([])
 const loading = ref(true)
+const uploadHelper = useUpload()
 
 onMounted(async () => {
     try {
@@ -18,7 +20,6 @@ onMounted(async () => {
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`
             }
         })
-        console.log(data.data)
         inscricoes.value = data.data
     } catch (error) {
         console.error(error)
@@ -27,14 +28,34 @@ onMounted(async () => {
     }
 })
 
+async function cancelarInscricao(inscricaoId) {
+    try {
+        await api.delete(`/inscricaos/${inscricaoId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        })
+        // Remover a inscrição da lista
+        inscricoes.value = inscricoes.value.filter(inscricao => inscricao.documentId !== inscricaoId)
+        
+        // Mostrar toast de sucesso
+        toast.success('Inscrição cancelada com sucesso!',)
+    } catch (error) {
+        console.error('Erro ao cancelar a inscrição:', error)
+        toast.error('Erro ao cancelar a inscrição.')
+    }
+}
 </script>
 
 <template>
+    <!-- ToastManager Component -->
+    <ToastManager />
+
     <div class="row justify-content-center mt-5" v-if="inscricoes.length > 0 && !loading">
         <div v-if="loading" class="spinner-grow" role="status">
-        <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">Loading...</span>
         </div>
-        <div v-for="inscricao in inscricoes" :key="inscricao.id" class="col-lg-4 col-md-6" >
+        <div v-for="inscricao in inscricoes" :key="inscricao.documentId" class="col-lg-4 col-md-6">
             <div class="card mb-4">
                 <!-- <img :src="uploadHelper(inscricao.evento.imagem?.url)" class="card-img-top" alt="Imagem do Evento" style="max-height: 300px;object-fit: cover;object-position: center;"> -->
                 <div class="card-body">
@@ -44,7 +65,7 @@ onMounted(async () => {
                     <!-- <p class="card-text">Categoria: <span class="badge text-bg-secondary">{{ inscricao.evento.categoria?.nome }}</span></p> -->
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
-                    <button class="btn btn-danger">Cancelar inscrição</button>
+                    <button class="btn btn-danger" @click="cancelarInscricao(inscricao.documentId)">Cancelar inscrição</button>
                 </div>
             </div>
         </div>
