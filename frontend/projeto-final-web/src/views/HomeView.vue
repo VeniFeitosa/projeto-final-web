@@ -41,13 +41,13 @@ function fecharModal() {
       <h1 class="text-center mb-4">Eventos</h1>
       <div class="row">
         <div class="col-lg-4 col-md-6" v-for="evento in eventos" :key="evento.id">
-          <div class="card mb-4" style="height: 300px;">
-            <img :src="uploadHelper(evento.imagem?.url)" class="card-img-top" alt="Imagem do Evento">
+          <div class="card mb-4">
+            <img :src="uploadHelper(evento.imagem?.url)" class="card-img-top" alt="Imagem do Evento" style="max-height: 300px;object-fit: cover;object-position: center;">
             <div class="card-body">
               <h5 class="card-title">{{ evento.nome }}</h5>
               <p class="card-text">{{ evento.descricao }}</p>
               <p class="card-text"><small class="text-muted">Data: {{ format(new Date(evento.data), 'dd/MM/yyyy HH:mm') }}</small></p>
-              <span class="badge text-bg-secondary">{{ evento.categoria?.nome }}</span>
+              <p class="card-text">Categoria: <span class="badge text-bg-secondary">{{ evento.categoria?.nome }}</span></p>
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
               <button class="btn btn-primary" @click="abrirModal(evento)">Detalhes</button>
@@ -74,10 +74,11 @@ function fecharModal() {
             <button type="button" class="btn-close" @click="fecharModal"></button>
           </div>
           <div class="modal-body">
-            <img :src="selectedEvento.imagem" class="img-fluid mb-3" alt="Imagem do Evento">
+            <img :src="uploadHelper(selectedEvento.imagem?.url)" class="img-fluid mb-3" alt="Imagem do Evento">
             <p><strong>Data:</strong> {{ format(new Date(selectedEvento.data), 'dd/MM/yyyy HH:mm') }}</p>
-            <!-- <p><strong>Categoria:</strong> {{ selectedEvento.categoria }}</p> -->
-            <p><strong>Detalhes:</strong> {{ selectedEvento.descricao }}</p>
+            <p><strong>Categoria:</strong> {{ selectedEvento.categoria.nome }}</p>
+            <p><strong>Descrição:</strong> {{ selectedEvento.descricao }}</p>
+            <p><strong>Endereço:</strong> {{ selectedEvento.endereco }}</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="fecharModal">Fechar</button>

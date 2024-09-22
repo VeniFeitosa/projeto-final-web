@@ -52,6 +52,7 @@ export interface ApiEventoEvento extends Struct.CollectionTypeSchema {
       'api::categoria.categoria'
     >;
     data: Schema.Attribute.DateTime;
+    endereco: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;

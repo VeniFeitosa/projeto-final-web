@@ -44,6 +44,10 @@
     },
     "data": {
       "type": "datetime"
+    },
+    "endereco": {
+      "type": "string",
+      "required": true
     }
   }
 }
