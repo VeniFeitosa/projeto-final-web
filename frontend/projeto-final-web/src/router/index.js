@@ -3,6 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import LoginPage from '@/pages/Admin/LoginPage.vue'
 import RegisterPage from '@/pages/Admin/RegisterPage.vue'
 import NotFound from '@/pages/NotFound.vue'
+import Registrations from '@/pages/Registrations.vue'
+import { useUserStore } from '@/stores/userStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +24,14 @@ const router = createRouter({
       name: 'register',
       component: RegisterPage
     },
+    {
+      path: '/registrations',
+      name: 'registrations',
+      component: Registrations,
+      meta: {
+        requiresAuth: true
+      }
+    },
     { 
       path: '/:pathMatch(.*)*', 
       component: NotFound 
@@ -30,3 +40,14 @@ const router = createRouter({
 })
 
 export default router
+
+router.beforeEach((to, _) => {
+  const userStore = useUserStore()
+  // console.log(to.meta.requiresAuth, userStore.isAuthenticated)
+  if(to.meta.requiresAuth && !userStore.isAuthenticated) {
+    return '/login'
+  }
+  if(to.meta.requiresRole && to.meta.requiresRole !== userStore.role) {
+    return '/'
+  }
+})

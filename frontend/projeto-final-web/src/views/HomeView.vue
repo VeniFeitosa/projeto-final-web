@@ -1,45 +1,25 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { api } from '@/api'
+import { useUpload } from '@/composables/useUpload';
+const uploadHelper = useUpload()
+import { useUserStore } from '@/stores/userStore'
+const userStore = useUserStore()
+import { format } from "date-fns";
 
-// Mock de eventos usando ref
-const eventos = ref([
-  {
-    id: 1,
-    nome: "Evento de Tecnologia",
-    categoria: "Tecnologia",
-    data: "2024-10-01",
-    descricao: "Um evento focado nas novas tendências em tecnologia.",
-    imagem: "https://via.placeholder.com/400x200",
-    detalhes: "Aqui estão mais informações sobre o evento de tecnologia."
-  },
-  {
-    id: 2,
-    nome: "Conferência de Marketing",
-    data: "2024-10-10",
-    categoria: "Marketing",
-    descricao: "Explore as melhores práticas em marketing digital.",
-    imagem: "https://via.placeholder.com/400x200",
-    detalhes: "Aqui estão mais informações sobre a conferência de marketing."
-  },
-  {
-    id: 3,
-    nome: "Feira de Startups",
-    data: "2024-11-05",
-    categoria: "Startups",
-    descricao: "Apresentação de startups inovadoras e networking.",
-    imagem: "https://via.placeholder.com/400x200",
-    detalhes: "Aqui estão mais informações sobre a feira de startups."
-  },
-  {
-    id: 4,
-    nome: "Sana",
-    data: "2024-11-05",
-    categoria: "Anime",
-    descricao: "Evento voltado para cultura pop e geek.",
-    imagem: "https://via.placeholder.com/400x200",
-    detalhes: "Aqui estão mais informações sobre o evento Sana."
+const eventos = ref([])
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    const { data } = await api.get('/eventos?populate=*')
+    eventos.value = data.data
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
   }
-]);
+})
 
 // Controla a exibição do modal
 const selectedEvento = ref(null);
@@ -57,23 +37,33 @@ function fecharModal() {
 
 <template>
   <main>
-    <div class="container mt-4">
+    <div v-if="!loading" class="container mt-4">
       <h1 class="text-center mb-4">Eventos</h1>
       <div class="row">
-        <div class="col-md-4" v-for="evento in eventos" :key="evento.id">
-          <div class="card mb-4">
-            <img :src="evento.imagem" class="card-img-top" alt="Imagem do Evento">
+        <div class="col-lg-4 col-md-6" v-for="evento in eventos" :key="evento.id">
+          <div class="card mb-4" style="height: 300px;">
+            <img :src="uploadHelper(evento.imagem?.url)" class="card-img-top" alt="Imagem do Evento">
             <div class="card-body">
               <h5 class="card-title">{{ evento.nome }}</h5>
               <p class="card-text">{{ evento.descricao }}</p>
-              <p class="card-text"><small class="text-muted">Data: {{ evento.data }}</small></p>
-              <p class="card-text"><small class="text-muted">Categoria: {{ evento.categoria }}</small></p>
+              <p class="card-text"><small class="text-muted">Data: {{ format(new Date(evento.data), 'dd/MM/yyyy HH:mm') }}</small></p>
+              <span class="badge text-bg-secondary">{{ evento.categoria?.nome }}</span>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
               <button class="btn btn-primary" @click="abrirModal(evento)">Detalhes</button>
+              <button v-if="userStore.isAuthenticated" class="btn btn-secondary">Inscrever-se</button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div v-if="loading" class="d-flex align-items-center justify-content-center mt-5">
+      <div  class="spinner-grow" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
 
     <!-- Modal do Bootstrap -->
     <div v-if="showModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog">
@@ -85,9 +75,9 @@ function fecharModal() {
           </div>
           <div class="modal-body">
             <img :src="selectedEvento.imagem" class="img-fluid mb-3" alt="Imagem do Evento">
-            <p><strong>Data:</strong> {{ selectedEvento.data }}</p>
-            <p><strong>Categoria:</strong> {{ selectedEvento.categoria }}</p>
-            <p><strong>Detalhes:</strong> {{ selectedEvento.detalhes }}</p>
+            <p><strong>Data:</strong> {{ format(new Date(selectedEvento.data), 'dd/MM/yyyy HH:mm') }}</p>
+            <!-- <p><strong>Categoria:</strong> {{ selectedEvento.categoria }}</p> -->
+            <p><strong>Detalhes:</strong> {{ selectedEvento.descricao }}</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="fecharModal">Fechar</button>

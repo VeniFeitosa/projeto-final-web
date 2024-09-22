@@ -1,14 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+// import { ref, onMounted } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore'
+const userStore = useUserStore()
 
 const route = useRoute();
-const url = ref(route.path);
+const router = useRouter();
 
-onMounted(() => {
-  console.log('Componente montado');
-  console.log(route.path);
-});
+const handleLogout = () => {
+  userStore.logout();
+  router.push('/');
+};
 </script>
 
 <template>
@@ -27,22 +29,61 @@ onMounted(() => {
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
+        <ul class="navbar-nav">
+            <li class="nav-item">
             <RouterLink
-              class="nav-link"
-              :class="{ active: route.path === '/' }"
-              to="/"
-            >Home</RouterLink>
-          </li>
-          <li class="nav-item">
+                class="nav-link"
+                :class="{ active: route.path === '/' }"
+                to="/"
+            >HOME</RouterLink>
+            </li>
+            <li v-if="!userStore.isAuthenticated" class="nav-item">
             <RouterLink
-              class="nav-link"
-              :class="{ active: route.path === '/login' }"
-              to="/login"
-            >Login</RouterLink>
-          </li>
+                class="nav-link"
+                :class="{ active: route.path === '/login' }"
+                to="/login"
+            >LOGIN</RouterLink>
+            </li>
+            <li v-if="userStore.isAuthenticated" class="nav-item">
+            <RouterLink
+                class="nav-link"
+                :class="{ active: route.path === '/registrations' }"
+                to="/registrations"
+            >MINHAS INSCRIÇÕES</RouterLink>
+            </li>
+            <!-- <li v-if="userStore.isAuthenticated" class="nav-item">
+                <button
+                @click="userStore.logout"
+                class="btn btn-danger ml-4"
+                >LOGOUT</button>
+            </li> -->
+            <!-- <li v-if="userStore.isAuthenticated" class="nav-item dropdown ms-auto">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ userStore.username }}
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <button
+                            @click="userStore.logout"
+                            class="dropdown-item"
+                        >Logout</button>
+                    </li>
+                </ul>
+            </li> -->
         </ul>
+        <div v-if="userStore.isAuthenticated" class="nav-item dropdown ms-auto">
+            <a class="text-white nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ userStore.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-lg-end">
+                <li>
+                    <button
+                        @click="handleLogout"
+                        class="dropdown-item"
+                    >Logout</button>
+                </li>
+            </ul>
+        </div>
       </div>
     </div>
   </nav>

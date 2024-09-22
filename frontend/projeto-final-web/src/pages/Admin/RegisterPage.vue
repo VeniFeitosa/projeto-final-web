@@ -4,10 +4,10 @@ import { useRouter } from 'vue-router'
 import { api } from '@/api/'
 import { isAxiosError } from 'axios'
 import { isApplicationError } from '@/composables/useApplicationError.js'
+import { useUserStore } from '@/stores/userStore'
+const userStore = useUserStore()
 
 // Campos de registro
-const firstName = ref('')
-const lastName = ref('')
 const username = ref('')
 const email = ref('')
 const password = ref('')
@@ -25,7 +25,7 @@ function isValidEmail(email) {
 
 async function register() {
   formSubmitted.value = true
-  if (!firstName.value || !lastName.value || !username.value || !isValidEmail(email.value) || !password.value) {
+  if (!username.value || !isValidEmail(email.value) || !password.value) {
     return
   }
 
@@ -33,19 +33,16 @@ async function register() {
     loading.value = true
     exception.value = undefined
     // Enviar dados de registro para a API
-    const { data } = await api.post('/users', {
-      firstName: firstName.value,
-      lastName: lastName.value,
+    const { data } = await api.post('/auth/local/register', {
       username: username.value,
       email: email.value,
       password: password.value,
-      role: 1,
-      confirmed: true
     })
-
-    const { jwt } = data
+    console.log(data)
+    const { jwt, user } = data
+    userStore.authenticaded(user, jwt)
     // Redirecionar após o sucesso
-    router.push('/login')
+    router.push('/')
   } catch (e) {
     if (isAxiosError(e) && isApplicationError(e.response?.data)) {
       exception.value = e.response?.data
@@ -57,7 +54,7 @@ async function register() {
 </script>
 
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center mt-5">
     <div class="col-6 card">
       <div class="card-body">
         <h5 class="card-title">Sign Up</h5>
@@ -68,38 +65,6 @@ async function register() {
           <span class="visually-hidden">Loading...</span>
         </div>
         <form v-else @submit.prevent="register" novalidate>
-          <div class="mb-3">
-            <label for="firstNameInput" class="form-label">Nome:</label>
-            <input
-              type="text"
-              class="form-control"
-              id="firstNameInput"
-              v-model="firstName"
-              placeholder="Insira seu nome"
-              :class="{ 'is-invalid': formSubmitted && !firstName }"
-              required
-            />
-            <div v-if="formSubmitted && !firstName" class="invalid-feedback">
-              O nome é obrigatório.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="lastNameInput" class="form-label">Sobrenome:</label>
-            <input
-              type="text"
-              class="form-control"
-              id="lastNameInput"
-              v-model="lastName"
-              placeholder="Insira seu sobrenome"
-              :class="{ 'is-invalid': formSubmitted && !lastName }"
-              required
-            />
-            <div v-if="formSubmitted && !lastName" class="invalid-feedback">
-              O sobrenome é obrigatório.
-            </div>
-          </div>
-
           <div class="mb-3">
             <label for="usernameInput" class="form-label">Username:</label>
             <input

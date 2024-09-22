@@ -53,11 +53,11 @@ async function authenticate() {
     userStore.authenticaded(res.data, jwt)
 
     // Verificação do role e redirecionamento
-    if (role === 1) {
-      router.push('/admin')
-    } else {
+    // if (role === 1) {
+    //   router.push('/admin')
+    // } else {
       router.push('/')
-    }
+    // }
   } catch (e) {
     if (isAxiosError(e) && isApplicationError(e.response?.data)) {
       exception.value = e.response?.data
@@ -74,53 +74,55 @@ function goToRegister() {
 </script>
 
 <template>
-  <div class="row justify-content-center">
-    <div class="col-6 card">
-      <div class="card-body">
-        <h5 class="card-title">Sign In</h5>
-        <div v-if="exception" class="alert alert-danger" role="alert">
-          {{ exception.error.message }}
-        </div>
-        <div v-if="loading" class="spinner-grow" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <form v-else @submit.prevent="authenticate" novalidate>
-          <div class="mb-3">
-            <label for="emailInput" class="form-label">Email:</label>
-            <input
-              type="email"
-              class="form-control"
-              id="emailInput"
-              placeholder="mail@mail.com"
-              v-model="identifier"
-              :class="{ 'is-invalid': formSubmitted && !isValidEmail(identifier) }"
-              required
-            />
-            <div v-if="formSubmitted && !isValidEmail(identifier)" class="invalid-feedback">
-              Você deve informar um email válido.
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-6 card">
+        <div class="card-body">
+          <h5 class="card-title">Sign In</h5>
+          <div v-if="exception" class="alert alert-danger" role="alert">
+            {{ exception.error.message }}
+          </div>
+          <div v-if="loading" class="spinner-grow" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <form v-else @submit.prevent="authenticate" novalidate>
+            <div class="mb-3">
+              <label for="emailInput" class="form-label">Email:</label>
+              <input
+                type="email"
+                class="form-control"
+                id="emailInput"
+                placeholder="mail@mail.com"
+                v-model="identifier"
+                :class="{ 'is-invalid': formSubmitted && !isValidEmail(identifier) }"
+                required
+              />
+              <div v-if="formSubmitted && !isValidEmail(identifier)" class="invalid-feedback">
+                Você deve informar um email válido.
+              </div>
             </div>
-          </div>
-          <div class="mb-3">
-            <label for="passwordInput" class="form-label">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="passwordInput"
-              placeholder="********"
-              v-model="password"
-              :class="{ 'is-invalid': formSubmitted && !password }"
-              required
-            />
-            <div v-if="formSubmitted && !password" class="invalid-feedback">
-              A senha é um campo obrigatório.
+            <div class="mb-3">
+              <label for="passwordInput" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="passwordInput"
+                placeholder="********"
+                v-model="password"
+                :class="{ 'is-invalid': formSubmitted && !password }"
+                required
+              />
+              <div v-if="formSubmitted && !password" class="invalid-feedback">
+                A senha é um campo obrigatório.
+              </div>
             </div>
+            <div class="mb-3">
+              <input type="submit" class="float-end btn btn-primary" value="Enviar" />
+            </div>
+          </form>
+          <div class="mt-3">
+            <button class="btn btn-secondary" @click="goToRegister">Registrar</button>
           </div>
-          <div class="mb-3">
-            <input type="submit" class="float-end btn btn-primary" value="Enviar" />
-          </div>
-        </form>
-        <div class="mt-3">
-          <button class="btn btn-secondary" @click="goToRegister">Registrar</button>
         </div>
       </div>
     </div>

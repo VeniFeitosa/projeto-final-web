@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user', () => {
   const role = computed(() => user.value.role.name)
   const username = computed(() => user.value.username)
   const isAuthenticated = computed(() => jwt.value !== "")
-  
+  const id = computed(() => user.value.id.toString())
 
   function authenticaded(authUser, token) {
     user.value = authUser
@@ -37,5 +37,5 @@ export const useUserStore = defineStore('user', () => {
     localStorage.clear()
   }
 
-  return { user, username, jwt, role, isAuthenticated, authenticaded, logout }
+  return { user, username, jwt, role, id,  isAuthenticated, authenticaded, logout }
 })
