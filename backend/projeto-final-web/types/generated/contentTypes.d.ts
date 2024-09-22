@@ -586,6 +586,103 @@ export interface PluginUsersPermissionsUser
   };
 }
 
+export interface ApiCategoriaCategoria extends Struct.CollectionTypeSchema {
+  collectionName: 'categorias';
+  info: {
+    singularName: 'categoria';
+    pluralName: 'categorias';
+    displayName: 'Categoria';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    nome: Schema.Attribute.String & Schema.Attribute.Required;
+    eventos: Schema.Attribute.Relation<'oneToMany', 'api::evento.evento'>;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categoria.categoria'
+    >;
+  };
+}
+
+export interface ApiEventoEvento extends Struct.CollectionTypeSchema {
+  collectionName: 'eventos';
+  info: {
+    singularName: 'evento';
+    pluralName: 'eventos';
+    displayName: 'Evento';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    imagem: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    descricao: Schema.Attribute.String;
+    nome: Schema.Attribute.String & Schema.Attribute.Required;
+    inscricaos: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::inscricao.inscricao'
+    >;
+    categoria: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::categoria.categoria'
+    >;
+    data: Schema.Attribute.DateTime;
+    endereco: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::evento.evento'>;
+  };
+}
+
+export interface ApiInscricaoInscricao extends Struct.CollectionTypeSchema {
+  collectionName: 'inscricaos';
+  info: {
+    singularName: 'inscricao';
+    pluralName: 'inscricaos';
+    displayName: 'Inscri\u00E7\u00E3o';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    evento: Schema.Attribute.Relation<'manyToOne', 'api::evento.evento'>;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::inscricao.inscricao'
+    >;
+  };
+}
+
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -951,9 +1048,6 @@ export interface AdminTransferTokenPermission
 declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
-      'api::categoria.categoria': ApiCategoriaCategoria;
-      'api::evento.evento': ApiEventoEvento;
-      'api::inscricao.inscricao': ApiInscricaoInscricao;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::i18n.locale': PluginI18NLocale;
@@ -964,6 +1058,9 @@ declare module '@strapi/strapi' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::categoria.categoria': ApiCategoriaCategoria;
+      'api::evento.evento': ApiEventoEvento;
+      'api::inscricao.inscricao': ApiInscricaoInscricao;
       'admin::permission': AdminPermission;
       'admin::user': AdminUser;
       'admin::role': AdminRole;
