@@ -51,7 +51,7 @@ function fecharModal() {
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
               <button class="btn btn-primary" @click="abrirModal(evento)">Detalhes</button>
-              <button v-if="userStore.isAuthenticated" class="btn btn-secondary">Inscrever-se</button>
+              <button v-if="userStore.isAuthenticated && userStore.role !== 'Admin'" class="btn btn-secondary">Inscrever-se</button>
             </div>
           </div>
         </div>

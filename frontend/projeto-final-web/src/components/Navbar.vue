@@ -44,31 +44,19 @@ const handleLogout = () => {
                 to="/login"
             >LOGIN</RouterLink>
             </li>
-            <li v-if="userStore.isAuthenticated" class="nav-item">
+            <li v-if="userStore.isAuthenticated && userStore.role !== 'Admin'" class="nav-item">
             <RouterLink
                 class="nav-link"
                 :class="{ active: route.path === '/registrations' }"
                 to="/registrations"
             >MINHAS INSCRIÇÕES</RouterLink>
             </li>
-            <!-- <li v-if="userStore.isAuthenticated" class="nav-item">
-                <button
-                @click="userStore.logout"
-                class="btn btn-danger ml-4"
-                >LOGOUT</button>
-            </li> -->
-            <!-- <li v-if="userStore.isAuthenticated" class="nav-item dropdown ms-auto">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ userStore.username }}
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <button
-                            @click="userStore.logout"
-                            class="dropdown-item"
-                        >Logout</button>
-                    </li>
-                </ul>
+            <!-- <li v-if="userStore.isAuthenticated && userStore.role === 'Admin' " class="nav-item">
+            <RouterLink
+                class="nav-link"
+                :class="{ active: route.path === '/admin' }"
+                to="/admin"
+            >PÁGINA DE ADMIN</RouterLink>
             </li> -->
         </ul>
         <div v-if="userStore.isAuthenticated" class="nav-item dropdown ms-auto">
@@ -76,6 +64,21 @@ const handleLogout = () => {
                 {{ userStore.username }}
             </a>
             <ul class="dropdown-menu dropdown-menu-lg-end">
+                <li v-if="userStore.isAuthenticated && userStore.role === 'Admin' " class="dropdown-item">
+                    <RouterLink
+                        class="nav-link"
+                        :class="{ active: route.path === '/admin' }"
+                        to="/admin/eventos"
+                    >Manter eventos</RouterLink>
+                </li>
+                <li v-if="userStore.isAuthenticated && userStore.role === 'Admin' " class="dropdown-item">
+                    <RouterLink
+                        class="nav-link"
+                        :class="{ active: route.path === '/admin' }"
+                        to="/admin/categorias"
+                    >Manter categorias</RouterLink>
+                </li>
+                <li v-if="userStore.isAuthenticated && userStore.role === 'Admin' "><hr class="dropdown-divider"></li>
                 <li>
                     <button
                         @click="handleLogout"
