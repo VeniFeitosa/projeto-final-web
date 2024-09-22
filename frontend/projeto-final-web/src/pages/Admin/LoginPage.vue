@@ -45,11 +45,15 @@ async function authenticate() {
       }
     })
 
-    const role = res.data.role.type
+    // Verificar o que vem no res.data
+    console.log(res.data)
+
+    const role = res.data.role?.type // Verifica se o role existe e acessa o type
 
     userStore.authenticaded(res.data, jwt)
 
-    if (role === 'admin') {
+    // Verificação do role e redirecionamento
+    if (role === 1) {
       router.push('/admin')
     } else {
       router.push('/')
@@ -62,13 +66,18 @@ async function authenticate() {
     loading.value = false
   }
 }
+
+
+function goToRegister() {
+  router.push('/register')
+}
 </script>
 
 <template>
   <div class="row justify-content-center">
     <div class="col-6 card">
       <div class="card-body">
-        <h5 class="card-title">Sign in</h5>
+        <h5 class="card-title">Sign In</h5>
         <div v-if="exception" class="alert alert-danger" role="alert">
           {{ exception.error.message }}
         </div>
@@ -97,6 +106,7 @@ async function authenticate() {
               type="password"
               class="form-control"
               id="passwordInput"
+              placeholder="********"
               v-model="password"
               :class="{ 'is-invalid': formSubmitted && !password }"
               required
@@ -109,6 +119,9 @@ async function authenticate() {
             <input type="submit" class="float-end btn btn-primary" value="Enviar" />
           </div>
         </form>
+        <div class="mt-3">
+          <button class="btn btn-secondary" @click="goToRegister">Registrar</button>
+        </div>
       </div>
     </div>
   </div>
