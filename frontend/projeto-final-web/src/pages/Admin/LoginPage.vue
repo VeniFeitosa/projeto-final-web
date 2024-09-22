@@ -5,6 +5,8 @@ import { api } from '@/api/'
 import { useUserStore } from '@/stores/userStore'
 import { isAxiosError } from 'axios'
 import { isApplicationError } from '@/composables/useApplicationError.js'
+import ToastManager from '@/components/ToastManager.vue'
+import { toast } from 'vue-sonner'
 
 const identifier = ref('')
 const password = ref('')
@@ -24,6 +26,7 @@ function isValidEmail(email) {
 async function authenticate() {
   formSubmitted.value = true
   if (!isValidEmail(identifier.value) || !password.value) {
+    toast.error('Email ou senha inválidos')
     return
   }
 
@@ -45,21 +48,12 @@ async function authenticate() {
       }
     })
 
-    // Verificar o que vem no res.data
-    console.log(res.data)
-
-    const role = res.data.role?.type // Verifica se o role existe e acessa o type
-
     userStore.authenticaded(res.data, jwt)
 
-    // Verificação do role e redirecionamento
-    // if (role === 1) {
-    //   router.push('/admin')
-    // } else {
-      router.push('/')
-    // }
+    router.push('/')
   } catch (e) {
     if (isAxiosError(e) && isApplicationError(e.response?.data)) {
+      toast.error('Erro de autenticação. Verifique seus dados e tente novamente.')
       exception.value = e.response?.data
     }
   } finally {
@@ -67,21 +61,20 @@ async function authenticate() {
   }
 }
 
-
 function goToRegister() {
   router.push('/register')
 }
 </script>
 
 <template>
+  <!-- Toast Manager component -->
+  <ToastManager />
+
   <div class="container">
     <div class="row justify-content-center mt-5">
       <div class="col-6 card">
         <div class="card-body">
           <h5 class="card-title">Sign In</h5>
-          <div v-if="exception" class="alert alert-danger" role="alert">
-            {{ exception.error.message }}
-          </div>
           <div v-if="loading" class="spinner-grow" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
