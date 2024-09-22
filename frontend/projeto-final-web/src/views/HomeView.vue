@@ -147,65 +147,66 @@ function redirecionarLogin() {
       </div>
     </div>
 
-    <!-- Modal de Detalhes do Evento -->
-    <div v-if="showModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ selectedEvento.nome }}</h5>
-            <button type="button" class="btn-close" @click="fecharModal"></button>
-          </div>
-          <div class="modal-body">
-            <img :src="uploadHelper(selectedEvento.imagem?.url)" class="img-fluid mb-3" alt="Imagem do Evento">
-            <p><strong>Data:</strong> {{ format(new Date(selectedEvento.data), 'dd/MM/yyyy HH:mm') }}</p>
-            <p><strong>Categoria:</strong> {{ selectedEvento.categoria.nome }}</p>
-            <p><strong>Descrição:</strong> {{ selectedEvento.descricao }}</p>
-            <p><strong>Endereço:</strong> {{ selectedEvento.endereco }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="fecharModal">Fechar</button>
-          </div>
+   <!-- Modal de Detalhes do Evento -->
+  <div v-if="showModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ selectedEvento.nome }}</h5>
+          <button type="button" class="btn-close" @click="fecharModal"></button>
+        </div>
+        <div class="modal-body">
+          <img :src="uploadHelper(selectedEvento.imagem?.url)" class="img-fluid mb-3" alt="Imagem do Evento">
+          <p><strong>Data:</strong> {{ format(new Date(selectedEvento.data), 'dd/MM/yyyy HH:mm') }}</p>
+          <p><strong>Categoria:</strong> {{ selectedEvento.categoria.nome }}</p>
+          <p><strong>Descrição:</strong> {{ selectedEvento.descricao }}</p>
+          <p><strong>Endereço:</strong> {{ selectedEvento.endereco }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="fecharModal">Fechar</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Modal de Confirmação de Inscrição -->
-    <div v-if="showConfirmModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirmar Inscrição</h5>
-            <button type="button" class="btn-close" @click="fecharConfirmModal"></button>
-          </div>
-          <div class="modal-body">
-            <p>Deseja confirmar a inscrição no evento <strong>{{ selectedEvento.nome }}</strong>?</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="fecharConfirmModal">Cancelar</button>
-            <button type="button" class="btn btn-primary" @click="confirmarInscricao">Confirmar Inscrição</button>
-          </div>
+  <!-- Modal de Confirmação de Inscrição -->
+  <div v-if="showConfirmModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharConfirmModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar Inscrição</h5>
+          <button type="button" class="btn-close" @click="fecharConfirmModal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Deseja confirmar a inscrição no evento <strong>{{ selectedEvento.nome }}</strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="fecharConfirmModal">Cancelar</button>
+          <button type="button" class="btn btn-primary" @click="confirmarInscricao">Confirmar Inscrição</button>
         </div>
       </div>
     </div>
-    
-    <!-- Modal de Login Necessário -->
-    <div v-if="showLoginModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Login Necessário</h5>
-            <button type="button" class="btn-close" @click="fecharLoginModal"></button>
-          </div>
-          <div class="modal-body">
-            <p>Você precisa fazer login para se inscrever neste evento.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="fecharLoginModal">Fechar</button>
-            <button type="button" class="btn btn-primary" @click="redirecionarLogin">Fazer Login</button>
-          </div>
+  </div>
+
+  <!-- Modal de Login Necessário -->
+  <div v-if="showLoginModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharLoginModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Login Necessário</h5>
+          <button type="button" class="btn-close" @click="fecharLoginModal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Você precisa fazer login para se inscrever neste evento.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="fecharLoginModal">Fechar</button>
+          <button type="button" class="btn btn-primary" @click="redirecionarLogin">Fazer Login</button>
         </div>
       </div>
     </div>
+  </div>
+
 
   </main>
 </template>

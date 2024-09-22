@@ -36,7 +36,7 @@ async function cancelarInscricao(inscricaoId) {
             }
         })
         // Remover a inscrição da lista
-        inscricoes.value = inscricoes.value.filter(inscricao => inscricao.id !== inscricaoId)
+        inscricoes.value = inscricoes.value.filter(inscricao => inscricao.documentId !== inscricaoId)
         
         // Mostrar toast de sucesso
         toast.success('Inscrição cancelada com sucesso!',)
@@ -55,7 +55,7 @@ async function cancelarInscricao(inscricaoId) {
         <div v-if="loading" class="spinner-grow" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-        <div v-for="inscricao in inscricoes" :key="inscricao.id" class="col-lg-4 col-md-6">
+        <div v-for="inscricao in inscricoes" :key="inscricao.documentId" class="col-lg-4 col-md-6">
             <div class="card mb-4">
                 <!-- <img :src="uploadHelper(inscricao.evento.imagem?.url)" class="card-img-top" alt="Imagem do Evento" style="max-height: 300px;object-fit: cover;object-position: center;"> -->
                 <div class="card-body">
@@ -65,7 +65,7 @@ async function cancelarInscricao(inscricaoId) {
                     <!-- <p class="card-text">Categoria: <span class="badge text-bg-secondary">{{ inscricao.evento.categoria?.nome }}</span></p> -->
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
-                    <button class="btn btn-danger" @click="cancelarInscricao(inscricao.id)">Cancelar inscrição</button>
+                    <button class="btn btn-danger" @click="cancelarInscricao(inscricao.documentId)">Cancelar inscrição</button>
                 </div>
             </div>
         </div>
