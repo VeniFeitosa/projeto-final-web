@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { api } from '@/api'
 import { useUpload } from '@/composables/useUpload'
 import { useUserStore } from '@/stores/userStore'
-import { format } from "date-fns"
+import { format, isBefore } from "date-fns"
 import router from '@/router'
 import ToastManager from '@/components/ToastManager.vue'
 import { toast } from 'vue-sonner'
@@ -12,6 +12,13 @@ const eventos = ref([])
 const loading = ref(true)
 const userStore = useUserStore()
 const uploadHelper = useUpload()
+const search = ref('')
+
+const filteredEventos = computed(() => {
+  return eventos.value.filter(evento => 
+    evento.nome.toUpperCase().includes(search.value.toUpperCase()) || evento.categoria.nome.toUpperCase().includes(search.value.toUpperCase())
+  )
+})
 
 onMounted(async () => {
   try {
@@ -119,19 +126,29 @@ function redirecionarLogin() {
 
     <div v-if="!loading" class="container mt-4">
       <h1 class="text-center mb-4">Eventos</h1>
+      <!-- search input -->
+      <div class="input-group mb-3">
+        <input v-model="search" type="text" class="form-control" placeholder="Pesquisar eventos pela categoria ou pelo nome..." aria-label="Pesquisar eventos...">
+      </div>
       <div class="row">
-        <div class="col-lg-4 col-md-6" v-for="evento in eventos" :key="evento.id">
+        <div class="col-lg-4 col-md-6" v-for="evento in filteredEventos" :key="evento.id">
           <div class="card mb-4">
             <img :src="uploadHelper(evento.imagem?.url)" class="img-fluid card-img-top" alt="Imagem do Evento" style="height: 18.75rem;object-fit: cover;object-position: center;">
-            <div class="card-body" style="height: 200px;">
-              <h5 class="card-title">{{ evento.nome }}</h5>
+            <div class="card-body d-flex flex-column justify-content-between" style="height: 250px;">
+              <h5 class="card-title text-center fw-bold">{{ evento.nome }}</h5>
               <p class="card-text">{{ evento.descricao }}</p>
-              <p class="card-text"><small class="text-muted">Data: {{ format(new Date(evento.data), 'dd/MM/yyyy HH:mm') }}</small></p>
-              <p class="card-text">Categoria: <span class="badge text-bg-secondary">{{ evento.categoria?.nome }}</span></p>
+              <div>
+                <p
+                :class="{'text-danger': isBefore(new Date(evento.data), new Date())}" 
+                class="card-text fs-5"
+                >Data: {{ format(new Date(evento.data), 'dd/MM/yyyy HH:mm') }}</p>
+                <p class="card-text fs-5">Categoria: <span class="badge text-bg-secondary">{{ evento.categoria?.nome }}</span></p>
+                <p v-if="isBefore(new Date(evento.data), new Date())" class="text-danger fw-bold">Evento encerrado</p>
+              </div>
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
               <button class="btn btn-primary" @click="abrirModal(evento)">Detalhes</button>
-              <button v-if="userStore.isAuthenticated && userStore.role !== 'Admin'" class="btn btn-secondary" @click="inscreverSe(evento)">Inscrever-se</button>
+              <button v-if="userStore.isAuthenticated && userStore.role !== 'Admin' && !isBefore(new Date(evento.data), new Date())" class="btn btn-secondary" @click="inscreverSe(evento)">Inscrever-se</button>
             </div>
           </div>
         </div>
@@ -153,7 +170,10 @@ function redirecionarLogin() {
           </div>
           <div class="modal-body">
             <img :src="uploadHelper(selectedEvento.imagem?.url)" class="img-fluid mb-3" alt="Imagem do Evento">
-            <p><strong>Data:</strong> {{ format(new Date(selectedEvento.data), 'dd/MM/yyyy HH:mm') }}</p>
+            <p
+            :class="{'text-danger': isBefore(new Date(selectedEvento.data), new Date())}" 
+            ><strong>Data:</strong> {{ format(new Date(selectedEvento.data), 'dd/MM/yyyy HH:mm') }}</p>
+            <p v-if="isBefore(new Date(selectedEvento.data), new Date())" class="text-danger fw-bold">Evento encerrado</p>
             <p><strong>Categoria:</strong> {{ selectedEvento.categoria.nome }}</p>
             <p><strong>Descrição:</strong> {{ selectedEvento.descricao }}</p>
             <p><strong>Endereço:</strong> {{ selectedEvento.endereco }}</p>
