@@ -20,9 +20,9 @@ const descricao = ref('')
 const endereco = ref('')
 const dataEvento = ref('')
 const formSubmitted = ref(false)
-const categorias = ref([]) // Armazena as categorias
-const categoriaSelecionada = ref('') // Para armazenar a categoria selecionada
-const previewImageUrl = ref(null); // Para armazenar a URL da imagem temporária
+const categorias = ref([])
+const categoriaSelecionada = ref('')
+const previewImageUrl = ref(null);
 
 
 onMounted(async () => {
@@ -59,8 +59,6 @@ onMounted(async () => {
             dataEvento.value = ''
             formSubmitted.value = false
         }
-
-        // eventoToEdit.value = {}
     })
 })
 
@@ -89,8 +87,8 @@ const openCreateModal = () => {
     descricao.value = ''
     endereco.value = ''
     dataEvento.value = ''
-    imagem.value = null; // Limpa a imagem
-    previewImageUrl.value = null; // Limpa a URL da imagem
+    imagem.value = null;
+    previewImageUrl.value = null;
     formSubmitted.value = false
     eventoToEdit.value = {}
 }
@@ -101,13 +99,13 @@ const openEditModal = (evento) => {
     nome.value = evento.nome
     descricao.value = evento.descricao
     endereco.value = evento.endereco
-    dataEvento.value = format(new Date(evento.data), "yyyy-MM-dd'T'HH:mm") // Formatando data
+    dataEvento.value = format(new Date(evento.data), "yyyy-MM-dd'T'HH:mm")
     categoriaSelecionada.value = evento.categoria.documentId
 
     if (evento.imagem) {
-        previewImageUrl.value = uploadHelper(evento.imagem?.url); // Carregar a imagem existente
+        previewImageUrl.value = uploadHelper(evento.imagem?.url);
     } else {
-        previewImageUrl.value = null; // Limpa a URL da imagem
+        previewImageUrl.value = null;
     }
 }
 
@@ -117,7 +115,7 @@ function handleUpload(event) {
   imagem.value = target.files?.item(0)
 
   if (imagem.value) {
-    previewImageUrl.value = URL.createObjectURL(imagem.value); // Gerar URL temporária
+    previewImageUrl.value = URL.createObjectURL(imagem.value);
   }
 }
 
@@ -131,7 +129,7 @@ const uploadImage = async (file) => {
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`,
             },
         });
-        return response.data[0]; // Retorna a primeira imagem carregada
+        return response.data[0];
     } catch (error) {
         console.error('Erro ao enviar a imagem:', error);
         return null;
@@ -189,11 +187,9 @@ const submitForm = async (id) => {
         }
     }else{
         console.log('Criar evento', nome.value)
-        // Primeiro, envie a imagem
         const uploadedImage = await uploadImage(imagem.value)
 
         if (!uploadedImage) {
-            // Trate o erro se a imagem não foi enviada corretamente
             return
         }
 
@@ -203,7 +199,7 @@ const submitForm = async (id) => {
         datas.append('data[endereco]', endereco.value)
         datas.append('data[data]', dataEvento.value)
         datas.append('data[categoria]', categoriaSelecionada.value)
-        datas.append('data[imagem]', uploadedImage.id) // Use o ID da imagem carregada
+        datas.append('data[imagem]', uploadedImage.id)
 
         try {
             const evento = await api.post('/eventos', datas, {
@@ -241,7 +237,6 @@ const submitForm = async (id) => {
 
     <div v-if="eventos.length > 0 && !loading" class="mt-5">
         <div class="d-flex align-items-center justify-content-end">
-            <!-- modal trigger -->
             <button class="btn btn-primary me-4" data-bs-toggle="modal" data-bs-target="#createEventoModal" @click="openCreateModal()">Cadastrar evento</button>
         </div>
         <table class="table table-hover table-sm mx-auto">
@@ -281,7 +276,6 @@ const submitForm = async (id) => {
     </div>
 
     <div v-else-if="!loading">
-        <!-- card eventos não encontrados -->
         <div class="card text-center mx-auto mt-5" style="max-width: 60%;">
             <div class="card-body">
                 <h5 class="card-title">Nenhum evento encontrado</h5>
@@ -292,7 +286,6 @@ const submitForm = async (id) => {
         </div>
     </div>
 
-    <!-- Create evento modal -->
     <div class="modal fade" id="createEventoModal" tabindex="-1" aria-labelledby="createEventoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -303,7 +296,6 @@ const submitForm = async (id) => {
                 <div class="modal-body">
                     <form>
                         <div class="mb-3">
-                            <!-- <img class="img-fluid" v-if="eventoToEdit.imagem" :src="uploadHelper(eventoToEdit.imagem?.url)" alt="Imagem do evento" /> -->
                             <img v-if="previewImageUrl" :src="previewImageUrl" alt="Imagem do evento" class="img-fluid mb-3" />
                             <label for="coverInput" class="form-label">Imagem</label>
                             <input
@@ -342,7 +334,7 @@ const submitForm = async (id) => {
                             <select v-model="categoriaSelecionada" id="eventoCategoria" class="form-select" :class="{ 'is-invalid': formSubmitted && !categoriaSelecionada }">
                                 <option value="" disabled>Selecione uma categoria...</option>
                                 <option v-for="categoria in categorias" :key="categoria.documentId" :value="categoria.documentId">
-                                    {{ categoria.nome }} <!-- Exibindo o nome da categoria -->
+                                    {{ categoria.nome }}
                                 </option>
                             </select>
                             <div v-if="formSubmitted && !categoriaSelecionada" class="invalid-feedback">A categoria do evento é obrigatória.</div>
@@ -358,7 +350,6 @@ const submitForm = async (id) => {
         </div>
     </div>
 
-    <!-- Delete modal -->
     <div class="modal fade" id="deleteEventoModal" tabindex="-1" aria-labelledby="deleteEventoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

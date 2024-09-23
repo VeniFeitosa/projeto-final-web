@@ -7,7 +7,6 @@ import { isApplicationError } from '@/composables/useApplicationError.js'
 import { useUserStore } from '@/stores/userStore'
 const userStore = useUserStore()
 
-// Campos de registro
 const username = ref('')
 const email = ref('')
 const password = ref('')
@@ -15,10 +14,8 @@ const loading = ref(false)
 const exception = ref(undefined)
 const router = useRouter()
 
-// Para controlar a validação
 const formSubmitted = ref(false)
 
-// Função de validação simples de e-mail: deve conter "@" seguido de um "."
 function isValidEmail(email) {
   return email.includes('@') && email.split('@')[1]?.includes('.')
 }
@@ -32,7 +29,6 @@ async function register() {
   try {
     loading.value = true
     exception.value = undefined
-    // Enviar dados de registro para a API
     const { data } = await api.post('/auth/local/register', {
       username: username.value,
       email: email.value,
@@ -41,7 +37,6 @@ async function register() {
     console.log(data)
     const { jwt, user } = data
     userStore.authenticaded(user, jwt)
-    // Redirecionar após o sucesso
     router.push('/')
   } catch (e) {
     if (isAxiosError(e) && isApplicationError(e.response?.data)) {

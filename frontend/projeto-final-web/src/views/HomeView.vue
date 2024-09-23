@@ -24,11 +24,10 @@ onMounted(async () => {
   }
 })
 
-// Controla a exibição dos modais
 const selectedEvento = ref(null)
 const showModal = ref(false)
-const showLoginModal = ref(false) // Modal de login necessário
-const showConfirmModal = ref(false) // Modal de confirmação de inscrição
+const showLoginModal = ref(false) 
+const showConfirmModal = ref(false)
 
 function abrirModal(evento) {
   selectedEvento.value = evento
@@ -116,7 +115,6 @@ function redirecionarLogin() {
 
 <template>
   <main>
-    <!-- Toast Manager component -->
     <ToastManager />
 
     <div v-if="!loading" class="container mt-4">
@@ -133,7 +131,6 @@ function redirecionarLogin() {
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
               <button class="btn btn-primary" @click="abrirModal(evento)">Detalhes</button>
-              <!-- Condicional para mostrar o botão de inscrição apenas se o usuário estiver autenticado -->
               <button v-if="userStore.isAuthenticated && userStore.role !== 'Admin'" class="btn btn-secondary" @click="inscreverSe(evento)">Inscrever-se</button>
             </div>
           </div>
@@ -147,7 +144,6 @@ function redirecionarLogin() {
       </div>
     </div>
 
-    <!-- Modal de Detalhes do Evento -->
     <div v-if="showModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -169,7 +165,6 @@ function redirecionarLogin() {
       </div>
     </div>
 
-    <!-- Modal de Confirmação de Inscrição -->
     <div v-if="showConfirmModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharConfirmModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -188,7 +183,6 @@ function redirecionarLogin() {
       </div>
     </div>
 
-    <!-- Modal de Login Necessário -->
     <div v-if="showLoginModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharLoginModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
