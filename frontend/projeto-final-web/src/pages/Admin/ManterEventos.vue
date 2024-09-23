@@ -16,6 +16,9 @@ const descricao = ref('')
 const endereco = ref('')
 const dataEvento = ref('')
 const formSubmitted = ref(false)
+const categorias = ref([]) // Armazena as categorias
+const categoriaSelecionada = ref('') // Para armazenar a categoria selecionada
+
 
 onMounted(async () => {
     try {
@@ -26,6 +29,15 @@ onMounted(async () => {
         })
         eventos.value = data.data
         console.log(data.data)
+
+        // Buscar categorias já criadas
+        const { data: categoriasData } = await api.get('/categorias', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        })
+        categorias.value = categoriasData.data
+        console.log(categorias.value)
     } catch (error) {
         console.error(error)
     } finally {
@@ -93,70 +105,48 @@ function handleUpload(event) {
 }
 
 const submitForm = async (id) => {
-    formSubmitted.value = true
-    if (!nome.value || !descricao.value || !endereco.value || !dataEvento.value) {
-        return
+    formSubmitted.value = true;
+    
+    // Verificação de campos obrigatórios
+    if (!nome.value || !descricao.value || !endereco.value || !dataEvento.value || !categoriaSelecionada.value) {
+        return;
     }
-    const modal = bootstrap.Modal.getInstance(document.getElementById('createEventoModal'))
 
-    if (id) {
-        // Editar evento
-        console.log('Editar evento', nome.value)
-        // try {
-        //     const { data } = await api.put(`/eventos/${id}`, {
-        //         data: {
-        //             nome: nome.value,
-        //             descricao: descricao.value,
-        //             endereco: endereco.value,
-        //             data: dataEvento.value
-        //         }
-        //     }, {
-        //         headers: {
-        //             Authorization: `Bearer ${localStorage.getItem('jwt')}`
-        //         }
-        //     })
-        //     console.log(data)
-        //     const index = eventos.value.findIndex(evento => evento.id === id)
-        //     eventos.value[index] = data.data
-        //     modal.hide()
-        // } catch (error) {
-        //     console.error('Erro ao editar o evento:', error)
-        // }
-    } else {
-        // Criar evento
-        console.log('Criar evento', nome.value)
-        try {
-            const datas = new FormData()
-            datas.append(
-                'data',
-                JSON.stringify({
-                    nome: nome.value,
-                    descricao: descricao.value,
-                    endereco: endereco.value,
-                    data: dataEvento.value,
-                    categoria: 'k29rgf0e6jqmncq0xf6y31at',
-                })
-            )
-            datas.append('files.imagem', imagem.value)
-            console.log(datas.get('data'))
-            console.log(datas.get('files.imagem'))
-            // Removendo o cabeçalho 'contentType' para deixar Axios detectar automaticamente
-            const evento = await api.post('/eventos', datas , {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-                }
-            })
+    const modal = bootstrap.Modal.getInstance(document.getElementById('createEventoModal'));
+    
+    const datas = new FormData();
 
-            console.log(evento.data.data)
-            eventos.value.push(evento.data.data)
-            modal.hide()
-            // toast de sucesso
-        } catch (error) {
-            console.error('Erro ao criar o evento:', error)
-        }
+    // Adicionando os campos de dados diretamente ao FormData
+    datas.append('data[nome]', nome.value);
+    datas.append('data[descricao]', descricao.value);
+    datas.append('data[endereco]', endereco.value);
+    datas.append('data[data]', dataEvento.value);
+    datas.append('data[categoria]', categoriaSelecionada.value); // Categoria selecionada
 
+    // Adicionando a imagem se ela for fornecida
+    if (imagem.value) {
+        datas.append('files.imagem', imagem.value);
+    }
+
+    try {
+        const evento = await api.post('/eventos', datas, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+                // Axios define automaticamente o `Content-Type` quando se utiliza `FormData`
+            },
+        });
+
+        console.log(evento.data.data);
+        eventos.value.push(evento.data.data);
+        modal.hide();
+        // Exibir uma mensagem de sucesso ou qualquer outra ação
+
+    } catch (error) {
+        console.error('Erro ao criar o evento:', error);
     }
 }
+
+
 </script>
 
 <template>
@@ -259,6 +249,16 @@ const submitForm = async (id) => {
                             <label for="eventoData" class="form-label">Data</label>
                             <input type="datetime-local" class="form-control" id="eventoData" v-model="dataEvento" :class="{ 'is-invalid': formSubmitted && !dataEvento }">
                             <div v-if="formSubmitted && !dataEvento" class="invalid-feedback">A data do evento é obrigatória.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventoCategoria" class="form-label">Categoria</label>
+                            <select v-model="categoriaSelecionada" id="eventoCategoria" class="form-select" :class="{ 'is-invalid': formSubmitted && !categoriaSelecionada }">
+                                <option value="" disabled>Selecione uma categoria...</option>
+                                <option v-for="categoria in categorias" :key="categoria.documentId" :value="categoria.documentId">
+                                    {{ categoria.nome }} <!-- Exibindo o nome da categoria -->
+                                </option>
+                            </select>
+                            <div v-if="formSubmitted && !categoriaSelecionada" class="invalid-feedback">A categoria do evento é obrigatória.</div>
                         </div>
                     </form>
                 </div>
