@@ -69,7 +69,7 @@ const handleLogout = () => {
             <h5 class="text-white">
                 {{ userStore.username }}
             </h5>
-            <button class="btn btn-danger" @click="handleLogout">Sair</button>
+            <button class="btn btn-danger" @click="handleLogout">SAIR</button>
         </div>
       </div>
     </div>
