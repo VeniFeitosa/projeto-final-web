@@ -3,6 +3,9 @@ import { ref, onMounted } from 'vue'
 import { api } from '@/api/'
 import * as bootstrap from 'bootstrap'
 import { useUpload } from '@/composables/useUpload'
+import ToastManager from '@/components/ToastManager.vue'
+import { toast } from 'vue-sonner'
+
 const uploadHelper = useUpload()
 
 const loading = ref(true)
@@ -30,7 +33,6 @@ onMounted(async () => {
         eventos.value = data.data
         console.log(data.data)
 
-        // Buscar categorias já criadas
         const { data: categoriasData } = await api.get('/categorias', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`
@@ -44,13 +46,11 @@ onMounted(async () => {
         loading.value = false
     }
 
-    // Ouvir o evento de fechamento da modal
     const createModalEl = document.getElementById('createEventoModal')
 
     createModalEl.addEventListener('hidden.bs.modal', () => {
         console.log('Modal foi fechada!')
         if (!eventoToEdit.value || !eventoToEdit.value.id) {
-            // Limpar campos quando não houver evento sendo editado (modo de criação)
             nome.value = ''
             descricao.value = ''
             endereco.value = ''
@@ -66,19 +66,21 @@ const openDeleteModal = (evento) => {
     eventoToDelete.value = evento
 }
 
-const deleteEvent = async (id) => {
+const deleteEvent = async (documentId) => {
     try {
-        await api.delete(`/eventos/${id}`, {
+        await api.delete(`/eventos/${documentId}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`
             }
-        })
-        eventos.value = eventos.value.filter(evento => evento.id !== id)
-        // toast de sucesso
+        });
+        eventos.value = eventos.value.filter(evento => evento.documentId !== documentId);
+        toast.success('Evento excluído com sucesso!')
     } catch (error) {
-        console.error('Erro ao deletar o evento:', error)
+        console.error('Erro ao deletar o evento:', error);
+        toast.error('Erro ao excluir o evento.')
     }
-}
+};
+
 
 const openCreateModal = () => {
     nome.value = ''
@@ -95,7 +97,8 @@ const openEditModal = (evento) => {
     nome.value = evento.nome
     descricao.value = evento.descricao
     endereco.value = evento.endereco
-    dataEvento.value = new Date(evento.data).toISOString().substring(0, 10) // Formatando data
+    dataEvento.value = evento.data // Formatando data
+    categoriaSelecionada.value = evento.categoria?.data?.id
 }
 
 function handleUpload(event) {
@@ -104,52 +107,72 @@ function handleUpload(event) {
   imagem.value = target.files?.item(0)
 }
 
-const submitForm = async (id) => {
+const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('files', file);
+
+    try {
+        const response = await api.post('/upload', formData, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+            },
+        });
+        return response.data[0]; // Retorna a primeira imagem carregada
+    } catch (error) {
+        console.error('Erro ao enviar a imagem:', error);
+        return null;
+    }
+}
+
+
+const submitForm = async () => {
     formSubmitted.value = true;
-    
-    // Verificação de campos obrigatórios
     if (!nome.value || !descricao.value || !endereco.value || !dataEvento.value || !categoriaSelecionada.value) {
         return;
     }
 
-    const modal = bootstrap.Modal.getInstance(document.getElementById('createEventoModal'));
-    
-    const datas = new FormData();
+    const modal = bootstrap.Modal.getInstance(document.getElementById('createEventoModal'))
 
-    // Adicionando os campos de dados diretamente ao FormData
-    datas.append('data[nome]', nome.value);
-    datas.append('data[descricao]', descricao.value);
-    datas.append('data[endereco]', endereco.value);
-    datas.append('data[data]', dataEvento.value);
-    datas.append('data[categoria]', categoriaSelecionada.value); // Categoria selecionada
+    // Primeiro, envie a imagem
+    const uploadedImage = await uploadImage(imagem.value)
 
-    // Adicionando a imagem se ela for fornecida
-    if (imagem.value) {
-        datas.append('files.imagem', imagem.value);
+    if (!uploadedImage) {
+        // Trate o erro se a imagem não foi enviada corretamente
+        return
     }
+
+    const datas = new FormData()
+    datas.append('data[nome]', nome.value)
+    datas.append('data[descricao]', descricao.value)
+    datas.append('data[endereco]', endereco.value)
+    datas.append('data[data]', dataEvento.value)
+    datas.append('data[categoria]', categoriaSelecionada.value)
+    datas.append('data[imagem]', uploadedImage.id) // Use o ID da imagem carregada
 
     try {
         const evento = await api.post('/eventos', datas, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-                // Axios define automaticamente o `Content-Type` quando se utiliza `FormData`
             },
-        });
+        })
 
-        console.log(evento.data.data);
-        eventos.value.push(evento.data.data);
-        modal.hide();
-        // Exibir uma mensagem de sucesso ou qualquer outra ação
-
+        const { data } = await api.get('/eventos?populate=*', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
+        })
+        
+        eventos.value = data.data
+        modal.hide()
     } catch (error) {
-        console.error('Erro ao criar o evento:', error);
+        console.error('Erro ao criar o evento:', error)
     }
 }
-
 
 </script>
 
 <template>
+    <ToastManager />
     <div v-if="loading" class="d-flex align-items-center justify-content-center mt-5">
       <div class="spinner-grow" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -264,7 +287,7 @@ const submitForm = async (id) => {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" @click="submitForm(eventoToEdit.id)">Salvar</button>
+                    <button type="button" class="btn btn-primary" @click="submitForm(eventoToEdit.documentId)">Salvar</button>
                 </div>
             </div>
         </div>
