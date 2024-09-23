@@ -43,16 +43,41 @@ O EventConnect é uma plataforma de divulgação de eventos dos mais diversos ti
 
 | Entidade| Criação | Leitura | Atualização | Remoção |
 | --- | --- | --- | --- | --- |
-| Usuario | X |  X  | X | X |
+| Usuario | X |    |  |  |
 | Evento | X |  X  |  X | X |
 | Categoria | X |  X  | X | X |
-| Inscrição | X |  X  | X | X |
+| Inscrição | X |  X  |  | X |
 
 ## :neckbeard: Rotas da API REST utilizadas
 
-A definir...
 
-<!-- | Método HTTP | URL |
+| Método HTTP | URL |
 | --- | --- |
-| GET | api/entidade1/|
-| POST | api/entidade2 | -->
+| AUTENTICAÇÃO | |  |
+| `POST` | `/auth/local` |
+| `POST` | `/auth/local/register` |
+| --- | --- |
+| USUARIOS | |  |
+| `GET` | `/users/me` |
+| --- | --- |
+| INSCRIÇÕES | |  |
+| `GET` | `/inscricaos?filters[user][id][$eq]=${userStore.id}&populate[evento]=*&populate[user]=*'` |
+| `GET` | ``/inscricaos`` |
+| `POST` | `/inscricaos` |
+| `DELETE` | `/inscricaos/${selectedInscricao.value.documentId}` |
+| --- | --- |
+| EVENTOS | |  |
+| `GET` | `/eventos?populate=*` |
+| `POST` | `/eventos` |
+| `PUT` | `/eventos/${id}` |
+| `DELETE` | `/eventos/${documentId}` |
+| --- | --- |
+| CATEGORIAS | |  |
+| `GET` | `/categorias` |
+| `GET` | `/categorias?populate=*` |
+| `POST` | `/categorias` |
+| `PUT` | `/categorias/${id}` |
+| `DELETE` | `/categorias/${documentId}` |
+| --- | --- |
+| UPLOAD |   |
+| `POST` | `/upload` |
