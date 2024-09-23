@@ -15,10 +15,8 @@ const exception = ref(undefined)
 const router = useRouter()
 const userStore = useUserStore()
 
-// Para controlar a validação
 const formSubmitted = ref(false)
 
-// Função de validação simples de e-mail: deve conter "@" seguido de um "."
 function isValidEmail(email) {
   return email.includes('@') && email.split('@')[1]?.includes('.')
 }
@@ -67,7 +65,6 @@ function goToRegister() {
 </script>
 
 <template>
-  <!-- Toast Manager component -->
   <ToastManager />
 
   <div class="container">

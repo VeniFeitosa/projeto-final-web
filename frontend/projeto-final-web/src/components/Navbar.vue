@@ -1,5 +1,4 @@
 <script setup>
-// import { ref, onMounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore'
 const userStore = useUserStore()
@@ -65,13 +64,6 @@ const handleLogout = () => {
                     to="/admin/categorias"
                 >MANTER CATEGORIAS</RouterLink>
             </li>
-            <!-- <li v-if="userStore.isAuthenticated && userStore.role === 'Admin' " class="nav-item">
-            <RouterLink
-                class="nav-link"
-                :class="{ active: route.path === '/admin' }"
-                to="/admin"
-            >PÁGINA DE ADMIN</RouterLink>
-            </li> -->
         </ul>
         <div v-if="userStore.isAuthenticated" class="ms-auto d-flex align-items-center justify-content-center gap-3">
             <h5 class="text-white">

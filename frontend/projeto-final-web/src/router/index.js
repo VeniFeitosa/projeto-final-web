@@ -63,7 +63,6 @@ export default router
 
 router.beforeEach((to, _) => {
   const userStore = useUserStore()
-  // console.log(to.meta.requiresAuth, userStore.isAuthenticated)
   if(to.meta.requiresAuth && !userStore.isAuthenticated) {
     return '/login'
   }

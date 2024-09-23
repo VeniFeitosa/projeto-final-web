@@ -25,20 +25,15 @@ onMounted(async () => {
         loading.value = false
     }
 
-    // Ouvir o evento de fechamento da modal
     const createModalEl = document.getElementById('createCategoriaModal')
 
     createModalEl.addEventListener('hidden.bs.modal', () => {
         console.log('Modal foi fechada!')
-        // Verificar se o campo `categoriaToEdit` está vazio
         if (!categoriaToEdit.value || !categoriaToEdit.value.documentId) {
-            // Limpar campos somente quando não houver categoria sendo editada (modo de criação)
             nomeCategoria.value = ''
             formSubmitted.value = false
         }
 
-        // Sempre limpar a categoria que está sendo editada
-        // categoriaToEdit.value = {}
     })
 })
 
@@ -54,7 +49,6 @@ const deleteEvent = async (documentId) => {
             }
         })
         categorias.value = categorias.value.filter(evento => evento.documentId !== documentId)
-        //toast de sucesso
     } catch (error) {
         console.error('Erro ao deletar o evento:', error)
     }
@@ -80,7 +74,6 @@ const submitForm = async (id) => {
     const modal = bootstrap.Modal.getInstance(document.getElementById('createCategoriaModal'))
 
     if (id) {
-        // Editar categoria
         console.log('Editar categoria', nomeCategoria.value)
         try {
             const { data } = await api.put(`/categorias/${id}`, {
@@ -92,7 +85,6 @@ const submitForm = async (id) => {
                     Authorization: `Bearer ${localStorage.getItem('jwt')}`
                 }
             })
-            //toast de sucesso
             console.log(data)
             const index = categorias.value.findIndex(categoria => categoria.documentId === id)
             categorias.value[index] = data.data
@@ -101,7 +93,6 @@ const submitForm = async (id) => {
             console.error('Erro ao editar a categoria:', error)
         }
     } else {
-        // Criar categoria
         console.log('Criar categoria', nomeCategoria.value)
 
         try {
@@ -116,9 +107,7 @@ const submitForm = async (id) => {
             })
             console.log(categoria.data.data)
             categorias.value.push(categoria.data.data)
-            // Fechar a modal após a criação
             modal.hide()
-            //toast de sucesso
         } catch (error) {
             console.error('Erro ao criar a categoria:', error)
         }
@@ -135,7 +124,6 @@ const submitForm = async (id) => {
     </div>
     <div v-if="categorias.length > 0 && !loading" class="mt-5">
         <div class="d-flex align-items-center justify-content-end">
-            <!-- modal trigger -->
             <button
             class="btn btn-primary me-4"
             data-bs-toggle="modal"
@@ -159,7 +147,6 @@ const submitForm = async (id) => {
                         <button class="btn btn-warning btn-sm me-2" @click="openEditModal(categoria)"
                         data-bs-toggle="modal" data-bs-target="#createCategoriaModal"
                         >Editar</button>
-                        <!-- delete modal trigger -->
                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCategoriaModal" @click="openDeleteModal(categoria)">Excluir</button>
                     </td>
                 </tr>
@@ -168,7 +155,6 @@ const submitForm = async (id) => {
     </div>
     
     <div v-else-if="!loading">
-        <!-- card categorias não encontrados -->
         <div class="card text-center mx-auto mt-5" style="max-width: 60%;">
             <div class="card-body">
                 <h5 class="card-title">Nenhum evento encontrado</h5>
@@ -179,7 +165,6 @@ const submitForm = async (id) => {
         </div>
     </div>
 
-    <!-- Create categoria modal -->
     <div class="modal fade" id="createCategoriaModal" tabindex="-1" aria-labelledby="createCategoriaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -216,7 +201,6 @@ const submitForm = async (id) => {
         </div>
     </div>
 
-    <!-- delete categoria modal -->
     <div class="modal fade" id="deleteCategoriaModal" tabindex="-1" aria-labelledby="deleteCategoriaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

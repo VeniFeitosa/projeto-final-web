@@ -30,18 +30,15 @@ onMounted(async () => {
     }
 })
 
-// Função para abrir o modal de confirmação de deleção
 function abrirConfirmDeleteModal(inscricao) {
     selectedInscricao.value = inscricao
     showConfirmDeleteModal.value = true
 }
 
-// Função para fechar o modal de confirmação de deleção
 function fecharConfirmDeleteModal() {
     showConfirmDeleteModal.value = false
 }
 
-// Função para confirmar a exclusão da inscrição
 async function confirmarDelecaoInscricao() {
     try {
         await api.delete(`/inscricaos/${selectedInscricao.value.documentId}`, {
@@ -49,22 +46,19 @@ async function confirmarDelecaoInscricao() {
                 Authorization: `Bearer ${localStorage.getItem('jwt')}`
             }
         })
-        // Remover a inscrição da lista
         inscricoes.value = inscricoes.value.filter(inscricao => inscricao.documentId !== selectedInscricao.value.documentId)
         
-        // Mostrar toast de sucesso
         toast.success('Inscrição cancelada com sucesso!')
     } catch (error) {
         console.error('Erro ao cancelar a inscrição:', error)
         toast.error('Erro ao cancelar a inscrição.')
     } finally {
-        fecharConfirmDeleteModal() // Fechar modal após a operação
+        fecharConfirmDeleteModal()
     }
 }
 </script>
 
 <template>
-    <!-- ToastManager Component -->
     <ToastManager />
 
     <div class="row justify-content-center mt-5" v-if="inscricoes.length > 0 && !loading">
@@ -93,7 +87,6 @@ async function confirmarDelecaoInscricao() {
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Deleção -->
     <div v-if="showConfirmDeleteModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharConfirmDeleteModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
