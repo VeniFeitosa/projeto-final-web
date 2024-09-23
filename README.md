@@ -11,7 +11,7 @@ O EventConnect é uma plataforma de divulgação de eventos dos mais diversos ti
 
 * Usuário não logado
 * Usuário logado:
-* Administrador:
+* Administrador - Login: admin@email.com, Senha: admin123
 
 ## :spiral_calendar: Entidades ou tabelas do sistema
 
