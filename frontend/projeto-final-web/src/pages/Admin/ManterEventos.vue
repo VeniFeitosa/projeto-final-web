@@ -5,6 +5,7 @@ import * as bootstrap from 'bootstrap'
 import { useUpload } from '@/composables/useUpload'
 import ToastManager from '@/components/ToastManager.vue'
 import { toast } from 'vue-sonner'
+import { format } from "date-fns"
 
 const uploadHelper = useUpload()
 
@@ -21,6 +22,7 @@ const dataEvento = ref('')
 const formSubmitted = ref(false)
 const categorias = ref([]) // Armazena as categorias
 const categoriaSelecionada = ref('') // Para armazenar a categoria selecionada
+const previewImageUrl = ref(null); // Para armazenar a URL da imagem temporária
 
 
 onMounted(async () => {
@@ -58,7 +60,7 @@ onMounted(async () => {
             formSubmitted.value = false
         }
 
-        eventoToEdit.value = {}
+        // eventoToEdit.value = {}
     })
 })
 
@@ -87,6 +89,8 @@ const openCreateModal = () => {
     descricao.value = ''
     endereco.value = ''
     dataEvento.value = ''
+    imagem.value = null; // Limpa a imagem
+    previewImageUrl.value = null; // Limpa a URL da imagem
     formSubmitted.value = false
     eventoToEdit.value = {}
 }
@@ -97,14 +101,24 @@ const openEditModal = (evento) => {
     nome.value = evento.nome
     descricao.value = evento.descricao
     endereco.value = evento.endereco
-    dataEvento.value = evento.data // Formatando data
-    categoriaSelecionada.value = evento.categoria?.data?.id
+    dataEvento.value = format(new Date(evento.data), "yyyy-MM-dd'T'HH:mm") // Formatando data
+    categoriaSelecionada.value = evento.categoria.documentId
+
+    if (evento.imagem) {
+        previewImageUrl.value = uploadHelper(evento.imagem?.url); // Carregar a imagem existente
+    } else {
+        previewImageUrl.value = null; // Limpa a URL da imagem
+    }
 }
 
 function handleUpload(event) {
   const inputEvent = event 
   const target = inputEvent.target
   imagem.value = target.files?.item(0)
+
+  if (imagem.value) {
+    previewImageUrl.value = URL.createObjectURL(imagem.value); // Gerar URL temporária
+  }
 }
 
 const uploadImage = async (file) => {
@@ -125,7 +139,7 @@ const uploadImage = async (file) => {
 }
 
 
-const submitForm = async () => {
+const submitForm = async (id) => {
     formSubmitted.value = true;
     if (!nome.value || !descricao.value || !endereco.value || !dataEvento.value || !categoriaSelecionada.value) {
         return;
@@ -133,40 +147,86 @@ const submitForm = async () => {
 
     const modal = bootstrap.Modal.getInstance(document.getElementById('createEventoModal'))
 
-    // Primeiro, envie a imagem
-    const uploadedImage = await uploadImage(imagem.value)
+    if (id) {
+        console.log('Editar evento', eventoToEdit.value)
 
-    if (!uploadedImage) {
-        // Trate o erro se a imagem não foi enviada corretamente
-        return
-    }
+        const datas = new FormData()
+        datas.append('data[nome]', nome.value)
+        datas.append('data[descricao]', descricao.value)
+        datas.append('data[endereco]', endereco.value)
+        datas.append('data[data]', dataEvento.value)
+        datas.append('data[categoria]', categoriaSelecionada.value)
 
-    const datas = new FormData()
-    datas.append('data[nome]', nome.value)
-    datas.append('data[descricao]', descricao.value)
-    datas.append('data[endereco]', endereco.value)
-    datas.append('data[data]', dataEvento.value)
-    datas.append('data[categoria]', categoriaSelecionada.value)
-    datas.append('data[imagem]', uploadedImage.id) // Use o ID da imagem carregada
-
-    try {
-        const evento = await api.post('/eventos', datas, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-            },
-        })
-
-        const { data } = await api.get('/eventos?populate=*', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwt')}`
+        if (imagem.value) {
+            console.log('adicionar imagem...')
+            try {
+                const uploadedImage = await uploadImage(imagem.value)
+                datas.append('data[imagem]', uploadedImage.id)
+            } catch (error) {
+                console.error('Erro ao enviar a imagem:', error)
             }
-        })
-        
-        eventos.value = data.data
-        modal.hide()
-    } catch (error) {
-        console.error('Erro ao criar o evento:', error)
+        }
+
+        try {
+            const evento = await api.put(`/eventos/${id}`, datas, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+                },
+            })
+
+            const { data } = await api.get('/eventos?populate=*', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwt')}`
+                }
+            })
+            
+            eventos.value = data.data
+            modal.hide()
+            toast.success('Evento editado com sucesso!')
+        } catch (error) {
+            console.error('Erro ao criar o evento:', error)
+            toast.error('Erro ao excluir evento!')   
+        }
+    }else{
+        console.log('Criar evento', nome.value)
+        // Primeiro, envie a imagem
+        const uploadedImage = await uploadImage(imagem.value)
+
+        if (!uploadedImage) {
+            // Trate o erro se a imagem não foi enviada corretamente
+            return
+        }
+
+        const datas = new FormData()
+        datas.append('data[nome]', nome.value)
+        datas.append('data[descricao]', descricao.value)
+        datas.append('data[endereco]', endereco.value)
+        datas.append('data[data]', dataEvento.value)
+        datas.append('data[categoria]', categoriaSelecionada.value)
+        datas.append('data[imagem]', uploadedImage.id) // Use o ID da imagem carregada
+
+        try {
+            const evento = await api.post('/eventos', datas, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+                },
+            })
+
+            const { data } = await api.get('/eventos?populate=*', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('jwt')}`
+                }
+            })
+            
+            eventos.value = data.data
+            modal.hide()
+            toast.success('Evento criado com sucesso!')
+        } catch (error) {
+            console.error('Erro ao criar o evento:', error)
+            toast.error('Erro ao criar evento!')   
+        }
     }
+    
 }
 
 </script>
@@ -188,12 +248,13 @@ const submitForm = async () => {
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Nome</th>
                     <th scope="col">Imagem</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Nome</th>
                     <th scope="col">Descrição</th>
                     <th scope="col">Endereço</th>
                     <th scope="col">Data</th>
-                    <th scope="col">Ações</th>
+                    <th scope="col">  </th>
                 </tr>
             </thead>
             <tbody>
@@ -205,6 +266,7 @@ const submitForm = async () => {
                              alt="Imagem do evento" 
                              style="width: 100px; height: auto;" />
                     </td>
+                    <td>{{ evento.categoria.nome }}</td>
                     <td>{{ evento.nome }}</td>
                     <td>{{ evento.descricao }}</td>
                     <td>{{ evento.endereco }}</td>
@@ -241,6 +303,8 @@ const submitForm = async () => {
                 <div class="modal-body">
                     <form>
                         <div class="mb-3">
+                            <!-- <img class="img-fluid" v-if="eventoToEdit.imagem" :src="uploadHelper(eventoToEdit.imagem?.url)" alt="Imagem do evento" /> -->
+                            <img v-if="previewImageUrl" :src="previewImageUrl" alt="Imagem do evento" class="img-fluid mb-3" />
                             <label for="coverInput" class="form-label">Imagem</label>
                             <input
                                 @change="handleUpload"
@@ -248,9 +312,9 @@ const submitForm = async () => {
                                 id="coverInput"
                                 accept="image/*"
                                 class="form-control"
-                                :class="{ 'is-invalid': formSubmitted && !imagem }"
+                                :class="{ 'is-invalid': formSubmitted && !imagem && !previewImageUrl }"
                             />
-                            <div v-if="formSubmitted && !imagem" class="invalid-feedback">O imagem do evento é obrigatório.</div>
+                            <div v-if="formSubmitted && !imagem && !previewImageUrl" class="invalid-feedback">O imagem do evento é obrigatório.</div>
                             
                         </div>
                         <div class="mb-3">
@@ -287,7 +351,8 @@ const submitForm = async () => {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" @click="submitForm(eventoToEdit.documentId)">Salvar</button>
+                    <button v-if="!eventoToEdit.documentId" type="button" class="btn btn-primary" @click="submitForm()">Cadastrar</button>
+                    <button v-if="eventoToEdit.documentId" type="button" class="btn btn-primary" @click="submitForm(eventoToEdit.documentId)">Salvar alterações</button>
                 </div>
             </div>
         </div>
@@ -306,7 +371,7 @@ const submitForm = async () => {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" @click="deleteEvent(eventoToDelete.documentId)">Excluir</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="deleteEvent(eventoToDelete.documentId)">Excluir</button>
                 </div>
             </div>
         </div>
