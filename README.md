@@ -1,6 +1,6 @@
 # :checkered_flag: EventConnect
 
-O EventConnect é uma plataforma de divulgação de eventos dos mais diversos tipos. Nela é possível descobrir, filtrar compartilhar e se inscrever nos eventos.
+O EventConnect é uma plataforma de divulgação de eventos dos mais diversos tipos. Nela é possível descobrir, filtrar e se inscrever nos eventos.
 
 ## :technologist: Membros da equipe
 

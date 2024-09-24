@@ -4,7 +4,6 @@ import { api } from '@/api'
 import { useUpload } from '@/composables/useUpload'
 import { useUserStore } from '@/stores/userStore'
 import { format, isBefore } from "date-fns"
-import router from '@/router'
 import ToastManager from '@/components/ToastManager.vue'
 import { toast } from 'vue-sonner'
 
@@ -47,10 +46,6 @@ function fecharModal() {
 
 function abrirLoginModal() {
   showLoginModal.value = true
-}
-
-function fecharLoginModal() {
-  showLoginModal.value = false
 }
 
 function abrirConfirmModal(evento) {
@@ -114,10 +109,6 @@ async function confirmarInscricao() {
   }
 }
 
-function redirecionarLogin() {
-  fecharLoginModal()
-  router.push('/login')
-}
 </script>
 
 <template>
@@ -203,23 +194,7 @@ function redirecionarLogin() {
       </div>
     </div>
 
-    <div v-if="showLoginModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharLoginModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Login Necessário</h5>
-            <button type="button" class="btn-close" @click="fecharLoginModal"></button>
-          </div>
-          <div class="modal-body">
-            <p>Você precisa fazer login para se inscrever neste evento.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="fecharLoginModal">Fechar</button>
-            <button type="button" class="btn btn-primary" @click="redirecionarLogin">Fazer Login</button>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </main>
 </template>
 
