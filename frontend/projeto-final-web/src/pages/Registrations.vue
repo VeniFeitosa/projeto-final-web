@@ -55,7 +55,6 @@ async function confirmarDelecaoInscricao() {
     }
 }
 
-// Computed properties para separar eventos futuros e passados
 const futureEvents = computed(() => {
     return inscricoes.value.filter(inscricao => 
         inscricao.evento && inscricao.evento.data && 
@@ -74,9 +73,7 @@ const pastEvents = computed(() => {
 <template>
     <ToastManager />
 
-    <!-- Verifica se há eventos futuros ou passados -->
     <div v-if="!loading && (futureEvents.length > 0 || pastEvents.length > 0)" class="row justify-content-center mt-5">
-        <!-- Eventos Futuros -->
         <div v-for="inscricao in futureEvents" :key="inscricao.documentId" class="col-lg-4 col-md-6">
             <div class="card mb-4">
                 <div class="card-body d-flex flex-column justify-content-between" style="height: 250px;">
@@ -90,7 +87,6 @@ const pastEvents = computed(() => {
             </div>
         </div>
 
-        <!-- Eventos Passados -->
         <div v-for="inscricao in pastEvents" :key="inscricao.documentId" class="col-lg-4 col-md-6">
             <div class="card mb-4">
                 <div class="card-body d-flex flex-column justify-content-between" style="height: 250px;">
@@ -103,7 +99,6 @@ const pastEvents = computed(() => {
         </div>
     </div>
 
-    <!-- Mensagem quando não houver inscrições -->
     <div v-if="!loading && futureEvents.length === 0 && pastEvents.length === 0" class="col-12 card text-center w-100">
         <div class="card-body">
             <h5 class="card-title">Nenhuma inscrição encontrada</h5>
@@ -113,7 +108,6 @@ const pastEvents = computed(() => {
         </div>
     </div>
 
-    <!-- Modal de confirmação para deletar inscrição -->
     <div v-if="showConfirmDeleteModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5);" role="dialog" @click.self="fecharConfirmDeleteModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

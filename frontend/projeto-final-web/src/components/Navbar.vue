@@ -7,7 +7,12 @@ const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
+const isNavbarCollapsed = ref(true);
 const isDropdownOpen = ref(false);
+
+const toggleNavbar = () => {
+  isNavbarCollapsed.value = !isNavbarCollapsed.value;
+};
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -28,18 +33,20 @@ const handleLogout = () => {
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
       <RouterLink class="navbar-brand" to="/">EventConnect</RouterLink>
+
       <button
         class="navbar-toggler"
         type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
+        @click="toggleNavbar"
+        :class="{ collapsed: isNavbarCollapsed }"
         aria-controls="navbarNav"
-        aria-expanded="false"
+        aria-expanded="!isNavbarCollapsed"
         aria-label="Toggle navigation"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+
+      <div class="collapse navbar-collapse" :class="{ show: !isNavbarCollapsed }" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
             <RouterLink
@@ -64,7 +71,6 @@ const handleLogout = () => {
           </li>
         </ul>
 
-        <!-- Dropdown alinhado ao final da navbar -->
         <ul class="navbar-nav ms-auto">
           <li v-if="userStore.isAuthenticated" class="nav-item dropdown">
             <a 
@@ -75,8 +81,7 @@ const handleLogout = () => {
             >
               {{ userStore.username }}
             </a>
-            <ul v-if="isDropdownOpen" class="dropdown-menu dropdown-menu-dark show" @click="closeDropdown">
-              <!-- Admin: Exibe opções de manutenção -->
+            <ul v-if="isDropdownOpen" class="dropdown-menu dropdown-menu-start dropdown-menu-dark show" @click="closeDropdown">
               <li v-if="userStore.role === 'Admin'">
                 <RouterLink
                   class="dropdown-item"
@@ -91,7 +96,6 @@ const handleLogout = () => {
                   to="/admin/categorias"
                 >Manter Categorias</RouterLink>
               </li>
-              <!-- Qualquer usuário: Exibe opção de logout -->
               <li>
                 <button class="dropdown-item text-danger" @click="handleLogout">Sair</button>
               </li>
@@ -122,8 +126,8 @@ body, html {
 .dropdown-menu {
   background-color: #343a40;
   position: absolute;
-  right: 0; /* Garante que ele abra alinhado à direita */
-  left: auto; /* Remove o comportamento de expansão para a esquerda */
+  right: 0; 
+  left: auto; 
 }
 
 .dropdown-menu.show {
@@ -133,5 +137,11 @@ body, html {
 /* Certifica-se de que o dropdown não saia da tela */
 .nav-item.dropdown {
   position: relative;
+}
+
+@media (max-width: 991px) {
+  .dropdown-menu {
+    left: 0;
+  }
 }
 </style>

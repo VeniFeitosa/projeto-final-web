@@ -117,7 +117,6 @@ async function confirmarInscricao() {
 
     <div v-if="!loading" class="container mt-4">
       <h1 class="text-center mb-4">Eventos</h1>
-      <!-- search input -->
       <div class="input-group mb-3">
         <input v-model="search" type="text" class="form-control" placeholder="Pesquisar eventos pela categoria ou pelo nome..." aria-label="Pesquisar eventos...">
       </div>

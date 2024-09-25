@@ -239,40 +239,42 @@ const submitForm = async (id) => {
         <div class="d-flex align-items-center justify-content-end">
             <button class="btn btn-primary me-4" data-bs-toggle="modal" data-bs-target="#createEventoModal" @click="openCreateModal()">Cadastrar evento</button>
         </div>
-        <table class="table table-hover table-sm mx-auto">
-            <thead>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mx-auto">
+                <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Imagem</th>
+                    <th scope="col" class="d-none d-md-table-cell">Imagem</th>
                     <th scope="col">Categoria</th>
                     <th scope="col">Nome</th>
-                    <th scope="col">Descrição</th>
-                    <th scope="col">Endereço</th>
+                    <th scope="col" class="d-none d-md-table-cell">Descrição</th>
+                    <th scope="col" class="d-none d-md-table-cell">Endereço</th>
                     <th scope="col">Data</th>
-                    <th scope="col">  </th>
+                    <th scope="col" style="width: 150px;"> </th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr v-for="(evento, index) in eventos" :key="evento.id">
                     <th scope="row">{{ index + 1 }}</th>
-                    <td>
-                        <img v-if="evento.imagem" 
-                             :src="uploadHelper(evento.imagem?.url)" 
-                             alt="Imagem do evento" 
-                             style="width: 100px; height: auto;" />
+                    <td class="d-none d-md-table-cell">
+                    <img v-if="evento.imagem" 
+                        :src="uploadHelper(evento.imagem?.url)" 
+                        alt="Imagem do evento" 
+                        style="width: 100px; height: auto;" />
                     </td>
                     <td>{{ evento.categoria.nome }}</td>
                     <td>{{ evento.nome }}</td>
-                    <td>{{ evento.descricao }}</td>
-                    <td>{{ evento.endereco }}</td>
+                    <td class="d-none d-md-table-cell">{{ evento.descricao }}</td>
+                    <td class="d-none d-md-table-cell">{{ evento.endereco }}</td>
                     <td>{{ new Date(evento.data).toLocaleDateString() }}</td>
-                    <td class="text-end">
-                        <button class="btn btn-warning btn-sm me-2" @click="openEditModal(evento)" data-bs-toggle="modal" data-bs-target="#createEventoModal">Editar</button>
-                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteEventoModal" @click="openDeleteModal(evento)">Excluir</button>
+                    <td class="text-end" style="width: 150px;">
+                    <button class="btn btn-warning btn-sm me-2" @click="openEditModal(evento)" data-bs-toggle="modal" data-bs-target="#createEventoModal">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteEventoModal" @click="openDeleteModal(evento)">Excluir</button>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div v-else-if="!loading">
